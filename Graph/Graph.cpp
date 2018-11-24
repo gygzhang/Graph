@@ -21,6 +21,27 @@ typedef struct {
 	GraphKind kind;
 }MGraph;
 
+typedef struct QQueue {
+	double *data;
+	int front, rear;
+};
+
+void InitQueue(QQueue* Q) {
+	Q->data = (double*)malloc(20 * sizeof(double));
+	Q->front = Q->rear = 0;
+}
+
+void EnQueue(QQueue* Q, double data) {
+	Q->data[Q->rear++] = data;
+}
+
+void DeQueue(QQueue *Q, double *v) {
+	*v = Q->data[Q->front++];
+}
+
+bool QueueIsEmpty(QQueue Q) {
+	return Q.front == Q.rear;
+}
 
 int LOC(MGraph G, double a) {
 	for (int i = 0; i < G.vexnum; i++) {
@@ -112,6 +133,7 @@ void DFS(MGraph G, double v) {
 	V(v);*/
 	bool isdone=true;
 	for (int i = 0; i < G.vexnum; i++) {
+		//==!!!!!!!!!
 		if (visited[i] == false) isdone = false;
 	}
 	
@@ -123,13 +145,37 @@ void DFS(MGraph G, double v) {
 	}
 }
 
-void DFSTraverse(MGraph G, void(*Visit)(double v)) {
-	V = Visit;
+void DFSTraverse(MGraph G, void(*visit)(double v)) {
+	V = visit;
 	for (int i = 0; i < G.vexnum; i++) visited[i] = false;
 	for (int i = 0; i < G.vexnum; i++) {
 		if (!visited[i]) DFS(G, G.vexs[i]);
 	}
 }
+
+void BFSTraverse(MGraph G,void(*visit)(double v)) {
+	QQueue Q; double w,u;
+	for (int i = 0; i < G.vexnum;i++) visited[i] = false;
+	InitQueue(&Q);
+	for (int i = 0; i < G.vexnum; i++) {
+		if (!visited[i]) {
+			cout << G.vexs[i];
+			//visit(G.vexs[i]);
+			visited[i] = true;
+			EnQueue(&Q, G.vexs[i]);
+			while (!QueueIsEmpty(Q)) {
+				DeQueue(&Q, &w);
+				for (u = FristAdjVex(G, w); u >= 0; u = NextAdjVex(G, w,u)) {
+					visit(u);
+					visited[LOC(G, u)] = true;
+					EnQueue(&Q, u);
+				}
+			}
+		}
+	}
+}
+
+
 
 /*
 3 2
@@ -168,6 +214,8 @@ int main() {
 	MGraph G;
 	//CreateUDN(&G);
 	CreateDN(&G);
-	DFSTraverse(G, Print);
+	//DFSTraverse(G, Print);
+	cout << endl;
+	BFSTraverse(G, Print);
 	system("pause");
 }
