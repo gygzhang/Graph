@@ -159,16 +159,17 @@ void BFSTraverse(MGraph G,void(*visit)(double v)) {
 	InitQueue(&Q);
 	for (int i = 0; i < G.vexnum; i++) {
 		if (!visited[i]) {
-			cout << G.vexs[i];
-			//visit(G.vexs[i]);
+			visit(G.vexs[i]);
 			visited[i] = true;
 			EnQueue(&Q, G.vexs[i]);
 			while (!QueueIsEmpty(Q)) {
 				DeQueue(&Q, &w);
 				for (u = FristAdjVex(G, w); u >= 0; u = NextAdjVex(G, w,u)) {
-					visit(u);
-					visited[LOC(G, u)] = true;
-					EnQueue(&Q, u);
+					if (!visited[LOC(G, u)]) {
+						visit(u);
+						visited[LOC(G, u)] = true;
+						EnQueue(&Q, u);
+					}
 				}
 			}
 		}
@@ -196,8 +197,8 @@ void BFSTraverse(MGraph G,void(*visit)(double v)) {
 */
 
 /*
-7 10
-7 5 4 6 8 1 9
+10 13
+7 5 4 6 8 1 9 2 3 0
 7 5 11
 5 6 12
 6 5 13
@@ -208,6 +209,9 @@ void BFSTraverse(MGraph G,void(*visit)(double v)) {
 4 8 18
 4 7 19
 7 4 20
+8 2 21
+2 3 22
+3 0 23
 0 0 0
 */
 int main() {
