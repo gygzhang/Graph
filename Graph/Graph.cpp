@@ -4,7 +4,7 @@
 using namespace std;
 #define INT_MAX _CRT_INT_MAX
 #define MAX_VERTEX_NUM 20
-typedef int aa[2][3];
+//数组的方式
 typedef enum {DG,DN,UDG,UDN}GraphKind;
 typedef void* InfoType;
 typedef double VertexTpye;
@@ -13,13 +13,28 @@ typedef struct ArcCell {
 	VRType adj;
 	InfoType info;
 }ArcCell,AdjMatrix[MAX_VERTEX_NUM][MAX_VERTEX_NUM];
-
 typedef struct {
 	VertexTpye vexs[MAX_VERTEX_NUM];
 	AdjMatrix arcs;
 	int vexnum, arcnum;
 	GraphKind kind;
 }MGraph;
+
+typedef struct ArcNode {
+	int adjvex;
+	int weight;
+	struct ArcNode*nextarc;
+	InfoType *info;
+}ArcNode;
+typedef struct VNode {
+	VertexTpye data;
+	ArcNode *firstarc;
+}VNode,AdjList[MAX_VERTEX_NUM];
+typedef struct {
+	AdjList vertices;
+	int vexnum, arcnum;
+	int kind;
+}ALGraph;
 
 typedef struct QQueue {
 	double *data;
@@ -49,7 +64,134 @@ int LOC(MGraph G, double a) {
 	}
 }
 
-void CreateUDN(MGraph *G) {
+int LOC(ALGraph G, double a) {
+	for (int i = 0; i < G.vexnum; i++) {
+		if (a == G.vertices[i].data) return i;
+	}
+}
+
+ArcNode* GetTail(ArcNode *AD) {
+	ArcNode *a = AD;
+	while (a->nextarc != NULL) {
+		a = a->nextarc;
+	}
+	return a;
+}
+
+void CreateUDN(ALGraph *G) {
+	scanf("%d %d", &G->vexnum, &G->arcnum);
+	for (int i = 0; i < G->vexnum; i++) {
+		scanf("%lf", &G->vertices[i].data);
+		G->vertices[i].firstarc = NULL;
+	}
+	double a, b;
+	//for (int i = 0; i < G->vexnum; i++) {
+	while (true)
+	{
+		scanf("%lf %lf", &a, &b);
+		if (a == 0 && b == 0) {
+			//G->vertices[LOC(G,)].firstarc = NULL;
+			return;
+		}
+		if (G->vertices[LOC(*G, a)].firstarc == NULL)
+		{
+			G->vertices[LOC(*G, a)].firstarc = (ArcNode*)malloc(sizeof(ArcNode));
+			int m = LOC(*G, b);
+			G->vertices[LOC(*G, a)].firstarc->adjvex = m;
+			G->vertices[LOC(*G, a)].firstarc->info = NULL;
+			G->vertices[LOC(*G, a)].firstarc->nextarc = NULL;
+		}
+		else {
+			ArcNode* A = GetTail(G->vertices[LOC(*G, a)].firstarc);
+			A->nextarc = (ArcNode*)malloc(sizeof(ArcNode));
+			int m = LOC(*G, b);
+			A->nextarc->adjvex = m;
+			A->info = NULL;
+			A->nextarc->nextarc = NULL;
+		}
+	}
+
+	//}
+
+}
+
+void CreateDN(ALGraph *G) {
+	scanf("%d %d", &G->vexnum, &G->arcnum);
+	for (int i = 0; i < G->vexnum; i++) {
+		scanf("%lf", &G->vertices[i].data);
+		G->vertices[i].firstarc = NULL;
+	}
+	double a, b,w;
+	//for (int i = 0; i < G->vexnum; i++) {
+	while (true)
+	{
+		scanf("%lf %lf %lf", &a, &b,&w);
+		if (a == 0 && b == 0&&w==0) {
+			//G->vertices[LOC(G,)].firstarc = NULL;
+			return;
+		}
+		if (G->vertices[LOC(*G, a)].firstarc == NULL)
+		{
+			G->vertices[LOC(*G, a)].firstarc = (ArcNode*)malloc(sizeof(ArcNode));
+			int m = LOC(*G, b);
+			G->vertices[LOC(*G, a)].firstarc->adjvex = m;
+			G->vertices[LOC(*G, a)].firstarc->weight = w;
+			G->vertices[LOC(*G, a)].firstarc->info = NULL;
+			G->vertices[LOC(*G, a)].firstarc->nextarc = NULL;
+		}
+		else {
+			ArcNode* A = GetTail(G->vertices[LOC(*G, a)].firstarc);
+			A->nextarc = (ArcNode*)malloc(sizeof(ArcNode));
+			int m = LOC(*G, b);
+			A->nextarc->adjvex = m;
+			A->nextarc->weight = w;
+			A->info = NULL;
+			A->nextarc->nextarc = NULL;
+		}
+	}
+
+	//}
+
+}
+
+void CreateDG(ALGraph *G) {
+	scanf("%d %d",&G->vexnum,&G->arcnum);
+	for (int i = 0; i < G->vexnum; i++) {
+		scanf("%lf",&G->vertices[i].data);
+		G->vertices[i].firstarc = NULL;
+	}
+	double a,b;
+	//for (int i = 0; i < G->vexnum; i++) {
+		while (true)
+		{
+			scanf("%lf %lf", &a, &b);
+			if (a == 0 && b == 0) {
+				//G->vertices[LOC(G,)].firstarc = NULL;
+				return; 
+			}
+			if (G->vertices[LOC(*G, a)].firstarc == NULL)
+			{
+				G->vertices[LOC(*G, a)].firstarc = (ArcNode*)malloc(sizeof(ArcNode));
+				int m = LOC(*G, b);
+				G->vertices[LOC(*G, a)].firstarc->adjvex = m;
+				G->vertices[LOC(*G, a)].firstarc->info = NULL;
+				G->vertices[LOC(*G, a)].firstarc->nextarc = NULL;
+			}
+			else {
+				ArcNode* A = GetTail(G->vertices[LOC(*G, a)].firstarc);
+				A->nextarc = (ArcNode*)malloc(sizeof(ArcNode));
+				int m = LOC(*G, b);
+				A->nextarc->adjvex = m;
+				A->info = NULL;
+				A->nextarc->nextarc = NULL;
+			}
+		}
+		
+	//}
+
+}
+
+void CreateUDG(MGraph *G) {
 	scanf("%d %d", &G->vexnum, &G->arcnum);
 	//getchar();
 	for (int i = 0; i < G->vexnum; i++) scanf("%lf",&(G->vexs[i]));
@@ -94,7 +236,7 @@ void CreateGraph(MGraph *G) {
 		//case DG:return CreateDG(G); break;
 		//case DN:return CreateDN(G); break;
 		//case UDG:return CreateUDG(G); break;
-	case UDN:return CreateUDN(G); break;
+	//case UDN:return CreateUDN(G); break;
 	default:perror("err");
 	}
 }
@@ -176,6 +318,65 @@ void BFSTraverse(MGraph G,void(*visit)(double v)) {
 	}
 }
 
+void BFSTraverse(ALGraph AG, void(*visit)(double v)) {
+	V = visit;
+	QQueue Q; double w;
+	for (int i = 0; i < AG.vexnum; i++) visited[i] = false;
+	InitQueue(&Q);
+	for (int i = 0; i < AG.vexnum; i++)
+	{
+		if (!visited[i]) {
+			V(AG.vertices[i].data);
+			visited[i] = true;
+			EnQueue(&Q, AG.vertices[i].data); 
+			while (!QueueIsEmpty(Q)) {
+				DeQueue(&Q, &w);
+				ArcNode* an = AG.vertices[LOC(AG, w)].firstarc;
+				while (an!= NULL) {
+					if(!visited[an->adjvex]){
+						V(AG.vertices[an->adjvex].data);
+						visited[an->adjvex] = true;	
+						EnQueue(&Q, AG.vertices[an->adjvex].data);
+					}
+					an = an->nextarc;
+				}
+			}
+		}
+	}
+}
+
+void DFS(ALGraph AG, double a) {
+	V(a);
+	visited[LOC(AG, a)] = true;
+	bool isdone = true;
+	for (int i = 0; i < AG.vexnum; i++) {
+		if (visited[i]) isdone = false;
+	}
+	if (isdone) return;
+	ArcNode* an = AG.vertices[LOC(AG, a)].firstarc;
+	while(an!=NULL) {
+		if (!visited[an->adjvex]) {
+			DFS(AG, AG.vertices[an->adjvex].data);
+		}
+		//如果这个该节点的一个相邻节点被访问过，那么就找另一个相邻的节点
+		else {
+			an = an->nextarc;
+			//如果这个节点不为空，且没有访问过，那么DFS它
+			if (an&& !visited[an->adjvex])	DFS(AG, AG.vertices[an->adjvex].data);		
+		}
+	}
+}
+
+void DFSTraverse(ALGraph AG, void(*visit)(double v)) {
+	V = visit;
+	for (int i = 0; i < AG.vexnum; i++) visited[i] = false;
+	for (int j = 0; j < AG.vexnum; j++) {
+		if (!visited[j]) {
+			DFS(AG, AG.vertices[j].data);
+		}
+	}
+}
+
 
 
 /*
@@ -214,12 +415,58 @@ void BFSTraverse(MGraph G,void(*visit)(double v)) {
 3 0 23
 0 0 0
 */
+
+/*
+3 2
+1 2 3
+1 2
+1 3
+0 0
+0 0
+0 0
+*/
+
+/*
+4 4
+1 2 3 4
+1 2
+2 1
+1 3
+3 4
+2 4
+0 0
+0 0
+0 0
+*/
+
+/*
+10 12
+7 5 4 6 8 9 2 1 3 0
+7 5 10
+7 4 11
+4 7 12
+5 6 13
+6 5 14
+9 6 15
+6 9 16
+9 1 17
+4 8 18
+8 2 19
+2 3 20
+1 0 21
+0 1 22
+3 0 23
+0 0 0
+*/
 int main() {
 	MGraph G;
+	ALGraph AG;
+	CreateDN(&AG);
 	//CreateUDN(&G);
-	CreateDN(&G);
+	//CreateDN(&G);
 	//DFSTraverse(G, Print);
-	cout << endl;
-	BFSTraverse(G, Print);
+	//cout << endl;
+	//BFSTraverse(AG, Print);
+	DFSTraverse(AG, Print);
 	system("pause");
 }
